@@ -147,9 +147,7 @@ namespace IDontKonwHowToDoIt
                     var time = current_time.ToOADate();
                     var base_t = base_time.ToOADate();
                     int x = (int)time - (int)base_t;
-                    var str = serialPort1.ReadExisting();
-                    int y = Convert.ToInt32(str);
-                    S.Points.AddXY(x, y);
+                    S.Points.AddXY(x, serialPort1.ReadExisting());
                 }
                    )
                 );
@@ -170,6 +168,11 @@ namespace IDontKonwHowToDoIt
         private void button5_Click(object sender, EventArgs e)
         {
             chart1.Series.Add(S);
+        }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            chart1.Series.Remove(S);
         }
     }
 }
