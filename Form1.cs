@@ -13,9 +13,12 @@ namespace IDontKonwHowToDoIt
 {
     public partial class Form1 : Form
     {
+        private long receive_count = 0;
+        private StringBuilder strb = new StringBuilder();
         private DateTime current_time = new DateTime();
         public Series S;
         public DateTime base_time = new DateTime();
+        public int base_t;
         public Form1()
         {
             InitializeComponent();
@@ -36,6 +39,7 @@ namespace IDontKonwHowToDoIt
 
             S = new Series();
             base_time = System.DateTime.Now;
+            S.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Spline;
         }
 
         private void button1_Click_1(object sender, EventArgs e)
@@ -109,6 +113,7 @@ namespace IDontKonwHowToDoIt
             {
                 //串口已经处于打开状态
                 textBox_receive.Text = "";  //清空接收区
+                receive_count = 0;
             }
         }
 
@@ -135,22 +140,51 @@ namespace IDontKonwHowToDoIt
         {
             try
             {
-                //invoke同步ui
-                this.Invoke((EventHandler)(delegate
+                if (!checkBox1.Checked)
                 {
-                    current_time = System.DateTime.Now;
-                    if (checkBox3.Checked)
+                    //invoke同步ui
+                    this.Invoke((EventHandler)(delegate
                     {
-                        textBox_receive.AppendText(current_time.ToString("HH:mm:ss") + " ");
+                        current_time = System.DateTime.Now;
+                        if (checkBox3.Checked)
+                        {
+                            textBox_receive.AppendText(current_time.ToString("HH:mm:ss") + " ");
+                        }
+                        textBox_receive.AppendText(serialPort1.ReadExisting());
+                        var time = current_time.Ticks - base_time.Ticks;
+                        S.Points.AddXY(time, strb.ToString());
                     }
-                    textBox_receive.AppendText(serialPort1.ReadExisting());
-                    var time = current_time.ToOADate();
-                    var base_t = base_time.ToOADate();
-                    int x = (int)time - (int)base_t;
-                    S.Points.AddXY(x, serialPort1.ReadExisting());
+                       )
+                    );
                 }
-                   )
-                );
+                else
+                {
+                    int num = serialPort1.BytesToRead;
+                    byte[] received_buf = new byte[num];
+
+                    receive_count += num;
+                    serialPort1.Read(received_buf, 0, num);
+                    strb.Clear();     //防止出错,首先清空字符串构造器
+
+                    foreach (byte b in received_buf)
+                    {
+                        strb.Append(b.ToString("X2") + ' ');    //将byte型数据转化为2位16进制文本显示,用空格隔开
+                    }
+                    
+                    Invoke((EventHandler)(delegate
+                    {
+                        current_time = System.DateTime.Now;
+                        if (checkBox3.Checked)
+                        {
+                            textBox_receive.AppendText(current_time.ToString("HH:mm:ss") + " ");
+                        }
+                        textBox_receive.AppendText(strb.ToString());
+                        var time = current_time.Ticks - base_time.Ticks;
+                        S.Points.AddXY(time, strb.ToString());
+                    }
+                      )
+                    );
+                }
 
             }
             catch (Exception ex)

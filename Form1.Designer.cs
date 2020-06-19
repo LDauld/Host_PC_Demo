@@ -55,6 +55,7 @@
             this.serialPort1 = new System.IO.Ports.SerialPort(this.components);
             this.textBox_receive = new System.Windows.Forms.TextBox();
             this.chart1 = new System.Windows.Forms.DataVisualization.Charting.Chart();
+            this.checkBox1 = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.chart1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -295,11 +296,22 @@
             this.chart1.TabIndex = 22;
             this.chart1.Text = "chart1";
             // 
+            // checkBox1
+            // 
+            this.checkBox1.AutoSize = true;
+            this.checkBox1.Location = new System.Drawing.Point(195, 17);
+            this.checkBox1.Name = "checkBox1";
+            this.checkBox1.Size = new System.Drawing.Size(66, 16);
+            this.checkBox1.TabIndex = 23;
+            this.checkBox1.Text = "hex接收";
+            this.checkBox1.UseVisualStyleBackColor = true;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.checkBox1);
             this.Controls.Add(this.chart1);
             this.Controls.Add(this.textBox_receive);
             this.Controls.Add(this.comboBox5);
@@ -356,6 +368,7 @@
         private System.IO.Ports.SerialPort serialPort1;
         private System.Windows.Forms.TextBox textBox_receive;
         private System.Windows.Forms.DataVisualization.Charting.Chart chart1;
+        private System.Windows.Forms.CheckBox checkBox1;
     }
 }
 
