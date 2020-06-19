@@ -15,10 +15,9 @@ namespace IDontKonwHowToDoIt
     {
         private long receive_count = 0;
         private StringBuilder strb = new StringBuilder();
-        private DateTime current_time = new DateTime();
         public Series S;
+        private DateTime current_time = new DateTime();
         public DateTime base_time = new DateTime();
-        public int base_t;
         public Form1()
         {
             InitializeComponent();
@@ -34,6 +33,7 @@ namespace IDontKonwHowToDoIt
             comboBox3.Text = "8";
             comboBox4.Text = "无校验";
             comboBox5.Text = "1";
+            checkBox1.Checked = true;
             // 表格初始化
             chart1.Series.Clear();
 
@@ -109,12 +109,9 @@ namespace IDontKonwHowToDoIt
 
         private void button2_Click(object sender, EventArgs e)
         {
-            if (serialPort1.IsOpen)
-            {
-                //串口已经处于打开状态
-                textBox_receive.Text = "";  //清空接收区
-                receive_count = 0;
-            }
+            //串口已经处于打开状态
+            textBox_receive.Text = "";  //清空接收区
+            receive_count = 0;
         }
 
         private void button3_Click(object sender, EventArgs e)
@@ -145,14 +142,12 @@ namespace IDontKonwHowToDoIt
                     //invoke同步ui
                     this.Invoke((EventHandler)(delegate
                     {
-                        current_time = System.DateTime.Now;
-                        if (checkBox3.Checked)
+                        if (checkBox3.Checked) // 勾选了显示时间
                         {
+                            current_time = System.DateTime.Now;
                             textBox_receive.AppendText(current_time.ToString("HH:mm:ss") + " ");
                         }
                         textBox_receive.AppendText(serialPort1.ReadExisting());
-                        var time = current_time.Ticks - base_time.Ticks;
-                        S.Points.AddXY(time, strb.ToString());
                     }
                        )
                     );
@@ -174,13 +169,13 @@ namespace IDontKonwHowToDoIt
                     Invoke((EventHandler)(delegate
                     {
                         current_time = System.DateTime.Now;
-                        if (checkBox3.Checked)
+                        if (checkBox3.Checked) // 同上
                         {
                             textBox_receive.AppendText(current_time.ToString("HH:mm:ss") + " ");
                         }
                         textBox_receive.AppendText(strb.ToString());
-                        var time = current_time.Ticks - base_time.Ticks;
-                        S.Points.AddXY(time, strb.ToString());
+                        TimeSpan time = current_time.Subtract(base_time); // 获取当前时间与软件启动时间的差值
+                        S.Points.AddXY(time.Minutes.ToString() + ":" + time.Seconds.ToString(), strb.ToString());
                     }
                       )
                     );
@@ -197,11 +192,14 @@ namespace IDontKonwHowToDoIt
         {
             // 表格初始化
             chart1.Series.Clear();
+            S.Points.Clear();
         }
 
         private void button5_Click(object sender, EventArgs e)
         {
-            chart1.Series.Add(S);
+            if (!checkBox1.Checked)
+                MessageBox.Show("请以16进制接收");
+            else chart1.Series.Add(S);
         }
 
         private void button6_Click(object sender, EventArgs e)
